@@ -16,7 +16,7 @@ from nltk.corpus import stopwords
 # nltk.download('stopwords')
 # nltk.download('wordnet')
 
-path = "./All_FT"
+path = "https://drive.google.com/open?id=1ROglsQKBaUkcjQ7N7oboB5m3RBFwGXkq"
 filenames = os.listdir(path)
 documents = []
 
