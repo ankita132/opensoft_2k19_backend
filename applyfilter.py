@@ -5,6 +5,7 @@ from acts_detector_2 import *
 from dateutil.parser import parse
 from Judgement import *
 import os
+from query_search import *
 from flask import Blueprint, jsonify, abort, request
 
 filtering = Blueprint('foo', __name__)
@@ -31,6 +32,8 @@ def get_data():
     dicti['category'] = data['category']
     dicti['acts_sited'] = data['acts_sited']
     dicti['judge_name'] = data['judge_name']
+    dicti['choice'] = data['choice']
+    dicti['query'] = data['query']
 
     file = open('keywords.pickle', 'rb')
     data1 = pickle.load(file)
@@ -199,6 +202,13 @@ def get_data():
 
         return outlist
 
-    a = applyfil(dicti)
+    def run(dicti):
+        if dicti['choice'] == "acts" or dicti['choice'] == "cases":
+            a = getResults(dicti['query'], dicti['choice'])
+        else:
+            a = applyfil(dicti)
+        return a
+
+    a = run(dicti)
 
     return jsonify({'data': a})
