@@ -168,34 +168,33 @@ def get_data():
         from gensim.summarization.summarizer import summarize
         from gensim.summarization import keywords
         for i in finallist:
-            # file = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i)
-            # sentences = file.readlines()
-            # sentences = [k.decode("utf-8") for k in sentences]
-            # line = 0
-            # while sentences[line] == "":
-            #     line += 1
-            # casename.append(sentences[line])
-            # k = 0
-            # for j, i in enumerate(sentences):
-            #     if i[:2] == "1.":
-            #         k = j
-            #         break
-            # sentences = sentences[k:]
-            # sentences = [" ".join(i.split()[1:]) for i in sentences]
-            # prefix = "\n".join(sentences[:-2])
-            # postfix = "\n".join(sentences[-2:])
+            file = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i)
+            sentences = file.readlines()
+            sentences = [k.decode("utf-8") for k in sentences]
+            line = 0
+            while sentences[line] == "":
+                line += 1
+            casename.append(sentences[line])
+            k = 0
+            for j, i in enumerate(sentences):
+                if i[:2] == "1.":
+                    k = j
+                    break
+            sentences = sentences[k:]
+            sentences = [" ".join(i.split()[1:]) for i in sentences]
+            prefix = "\n".join(sentences[:-2])
+            postfix = "\n".join(sentences[-2:])
 
-            gensummary = "abc"
-            casename.append("somecasename")
-            # try:
-            #     gensummary += summarize(prefix, word_count=100)
-            #     gensummary += summarize(postfix, word_count=100)
-            # except:
-            #     try:
-            #         gensummary += summarize("\n".join(sentences),
-            #                                 word_count=100)
-            #     except:
-            #         gensummary += "\n".join(sentences)[:100]
+            gensummary = ""
+            try:
+                gensummary += summarize(prefix, word_count=100)
+                gensummary += summarize(postfix, word_count=100)
+            except:
+                try:
+                    gensummary += summarize("\n".join(sentences),
+                                            word_count=100)
+                except:
+                    gensummary += "\n".join(sentences)[:100]
             summary.append(gensummary)
 
         # print(summary)
@@ -206,7 +205,7 @@ def get_data():
             outdict['url'] = i
             outdict['casename'] = casename[j]
             outdict['summary'] = summary[j]
-            #outdict['acts_sited'] = list(getActs("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i))
+            outdict['acts_sited'] = list(getActs("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i))
             outdict['acts_sited'] = []
             try:
                 outdict['keywords'] = data4[i[:-4]]
