@@ -30,14 +30,14 @@ def get_data():
         except ValueError:
             return False
 
-    dicti = {}
-    dicti['from'] = data['from']
-    dicti['to'] = data['to']
-    dicti['category'] = data['category']
-    dicti['acts_sited'] = data['acts_sited']
-    dicti['judge_name'] = data['judge_name']
-    dicti['choice'] = data['choice']
-    dicti['query'] = data['query']
+    dicti_new = {}
+    dicti_new['from'] = data['from']
+    dicti_new['to'] = data['to']
+    dicti_new['category'] = data['category']
+    dicti_new['acts_sited'] = data['acts_sited']
+    dicti_new['judge_name'] = data['judge_name']
+    dicti_new['choice'] = data['choice']
+    dicti_new['query'] = data['query']
 
     file = open('keywords.pickle', 'rb')
     data1 = pickle.load(file)
@@ -94,15 +94,15 @@ def get_data():
         return case_file
 
 
-    def applyfil(dicti):
+    def applyfil(dicti_new):
         flag = 0
         newlist = set([])
-        if dicti['judge_name'] == "":
+        if dicti_new['judge_name'] == "":
             judgelist = set([])
             flag += 1
         else:
             try:
-                n = preprocess_judge(dicti['judge_name'])
+                n = preprocess_judge(dicti_new['judge_name'])
                 judgelist = set(data3[n])
                 if len(newlist) == 0:
                     newlist.update(judgelist)
@@ -110,23 +110,23 @@ def get_data():
                     newlist.update(judgelist)
             except:
                 return []
-        if dicti['category'] == "":
+        if dicti_new['category'] == "":
             catlist = set([])
             flag += 1
         else:
             try:
-                temp_l = [i+".txt" for i in data1[dicti['category']]]
+                temp_l = [i+".txt" for i in data1[dicti_new['category']]]
                 catlist = set(temp_l)
                 newlist = newlist.intersection(catlist)
             except:
                 return []
 
-        if dicti['acts_sited'] == "":
+        if dicti_new['acts_sited'] == "":
             actlist = set([])
             flag += 1
         else:
             try:
-                actlist = set(data2[dicti['acts_sited']])
+                actlist = set(data2[dicti_new['acts_sited']])
                 if len(newlist) == 0 and flag == 2:
                     newlist.update(actlist)
                 else:
@@ -140,20 +140,20 @@ def get_data():
 
         finallist = []
 
-        if flag == 3 and dicti["from"] == "" and dicti["to"] == "":
+        if flag == 3 and dicti_new["from"] == "" and dicti_new["to"] == "":
             finallist = allfiles[:20]
 
         elif flag != 3:
-            if dicti["from"] == "":
+            if dicti_new["from"] == "":
                 datefrom = datetime.datetime.now() - datetime.timedelta(days=1000*365)
             else:
                 datefrom = datetime.datetime.strptime(
-                    dicti['from'], '%d-%m-%Y')
+                    dicti_new['from'], '%d-%m-%Y')
 
-            if dicti["to"] == "":
+            if dicti_new["to"] == "":
                 dateto = datetime.datetime.now()
             else:
-                dateto = datetime.datetime.strptime(dicti['to'], '%d-%m-%Y')
+                dateto = datetime.datetime.strptime(dicti_new['to'], '%d-%m-%Y')
 
             for j in newlist:
                 date = data6[j]
@@ -222,13 +222,13 @@ def get_data():
 
         return outlist
 
-    def run(dicti):
-        if dicti['choice'] == "acts" or dicti['choice'] == "cases":
-            a = getResults(dicti['query'], dicti['choice'])
+    def run(dicti_new):
+        if dicti_new['choice'] == "acts" or dicti_new['choice'] == "cases":
+            a = getResults(dicti_new['query'], dicti_new['choice'])
         else:
-            a = applyfil(dicti)
+            a = applyfil(dicti_new)
         return a
 
-    a = run(dicti)
+    a = run(dicti_new)
 
     return jsonify({'data': a})
