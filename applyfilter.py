@@ -74,9 +74,38 @@ def get_data():
         case_file = i
         return case_file
 
+    def preprocess_judge(case_file):
+        i = case_file.lower()
+        i = i.replace("hon'ble", " ").replace("mr"," ").replace("justice"," ")
+        no_punct = ""
+        for char in i:
+            if char not in punctuations:
+                no_punct = no_punct + char
+            else:
+                no_punct = no_punct + " "
+        i.strip()
+        i = re.sub(' +', ' ', no_punct)
+        i = i.strip()
+        case_file = i
+        return case_file
+
+
     def applyfil(dicti):
         flag = 0
         newlist = set([])
+        if dicti['judge_name'] == "":
+            judgelist = set([])
+            flag += 1
+        else:
+            try:
+                n = preprocess_judge(dicti['judge_name'])
+                judgelist = set(data3[n])
+                if len(newlist) == 0:
+                    newlist.update(judgelist)
+                else:
+                    newlist.update(judgelist)
+            except:
+                return []
         if dicti['category'] == "":
             catlist = set([])
             flag += 1
@@ -84,7 +113,7 @@ def get_data():
             try:
                 temp_l = [i+".txt" for i in data1[dicti['category']]]
                 catlist = set(temp_l)
-                newlist.update(catlist)
+                newlist = newlist.intersection(catlist)
             except:
                 return []
 
@@ -94,22 +123,10 @@ def get_data():
         else:
             try:
                 actlist = set(data2[dicti['acts_sited']])
-                if len(newlist) == 0:
+                if len(newlist) == 0 and flag == 2:
                     newlist.update(actlist)
                 else:
                     newlist = newlist.intersection(actlist)
-            except:
-                return []
-        if dicti['judge_name'] == "":
-            judgelist = set([])
-            flag += 1
-        else:
-            try:
-                judgelist = set(data3[dicti['judge_name']])
-                if len(newlist) == 0 and flag == 2:
-                    newlist.update(judgelist)
-                else:
-                    newlist = newlist.intersection(judgelist)
             except:
                 return []
         # newlist = judgelist.intersection(actlist.intersection(catlist))

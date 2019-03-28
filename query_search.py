@@ -3,6 +3,7 @@ from Judgement import *
 from acts_detector_2 import *
 import re
 punctuations = '''!()[]{};:'"\,<>./?@#$%^&*_~'''
+from urllib.request import urlopen
 
 
 def preprocess(case_file):
@@ -126,9 +127,9 @@ file.close()
 
 
 def generateSummary_act(file):
-    f = open(file)
+    f = urlopen(file)
     sentences = f.readlines()
-    return sentences[0]
+    return sentences[0].decode("utf-8")
 
 
 def generate_case(finallist,query1):
@@ -191,7 +192,7 @@ def generate_case(finallist,query1):
 def getResults(query, mode):
     finallist = test_tfidf(query, mode)
     query1 = correct_query(query, mode)
-    if query1.strip() == query:
+    if query1.strip().lower() == query.lower():
         query1 = ""
     if mode == "acts":
         outlist = []
