@@ -11,11 +11,11 @@ def get_data():
     data = request.get_json(force=True)
     filename = data['url']
     #print(getActs1("All_FT/"  + filename))
-    f = open("All_FT/" + filename)
-    text = f.read()
+    f = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + filename)
+    text = f.read().decode("utf-8")
     a = {}
     a['text'] = text
-    a['cases_sited'] = getCases("All_FT/" + filename)
+    a['cases_sited'] = getCases("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + filename)
     return jsonify({'data': a})
     #print(getCases("All_FT/" + filename))
 
@@ -24,8 +24,8 @@ def get_data():
 def read_data():
     data = request.get_json(force=True)
     filename = data['url']
-    f = open(filename)
-    text = f.read()
+    f = urlopen(filename)
+    text = f.read().decode("utf-8")
     a = {}
     a['text'] = text
     return jsonify({'data': a})

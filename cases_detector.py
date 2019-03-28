@@ -1,5 +1,6 @@
 import re
 import pygtrie
+from urllib.request import urlopen
 
 cases_list = open("doc_path_ttl_id.txt")
 cases_list = cases_list.readlines()
@@ -16,8 +17,8 @@ for i in cases_list:
 
 
 def getCases(filename):
-	case_file = open(filename)
-	case_file = case_file.read()
+	case_file = urlopen(filename)
+	case_file = case_file.read().decode("utf-8")
 	listi = [0]
 	listi.extend([m.start() + 1 for m in re.finditer(' ', case_file)])
 
@@ -31,7 +32,7 @@ def getCases(filename):
 	        #print( i , " : ",x, " --> ", z)
 	        outdict['index1'] = i
 	        outdict['index2'] = i + len(z)
-	        outdict['url'] = "All_FT/" + z + ".txt"
+	        outdict['url'] = "https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + z + ".txt"
 	        outlist.append(outdict)
 	return outlist
 

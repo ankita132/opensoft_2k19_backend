@@ -13,12 +13,13 @@ import nltk
 from nltk.tokenize import word_tokenize
 import re
 from nltk.corpus import stopwords
+from urllib.request import urlopen
 # nltk.download('stopwords')
 # nltk.download('wordnet')
 
-path = "./All_FT"
-filenames = os.listdir(path)
-documents = []
+# path = "./All_FT"
+# filenames = os.listdir(path)
+# documents = []
 
 
 def f(sentences):
@@ -48,35 +49,35 @@ def preprocess(case_file):
     return case_file
 
 
-i = 0
-for filename in filenames:
-    if(i > 1000):
-        break
-    i = i+1
-    file = open(path+'/'+filename)
-    s = file.readlines()
-    s = f(s)
-    documents.append(s[-1])
-vectorizer = TfidfVectorizer(stop_words='english')
-X = vectorizer.fit_transform(documents)
-true_k = 4
-model = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1)
-model.fit(X)
-order_centroids = model.cluster_centers_.argsort()[:, ::-1]
-terms = vectorizer.get_feature_names()
+# i = 0
+# for filename in filenames:
+#     if(i > 1000):
+#         break
+#     i = i+1
+#     file = open(path+'/'+filename)
+#     s = file.readlines()
+#     s = f(s)
+#     documents.append(s[-1])
+# vectorizer = TfidfVectorizer(stop_words='english')
+# X = vectorizer.fit_transform(documents)
+# true_k = 4
+# model = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1)
+# model.fit(X)
+# order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+# terms = vectorizer.get_feature_names()
 
 
-def kmeans(sent):
-    X = vectorizer.transform(sent)
-    predicted = model.predict(X)
-    if predicted[0] == 0:
-        return 'Dismissed'
-    elif predicted[0] == 1:
-        return 'Allowed'
-    elif predicted[0] == 2:
-        return 'Disposed Of'
-    elif predicted[0] == 3:
-        return 'Order Accordingly'
+# def kmeans(sent):
+#     X = vectorizer.transform(sent)
+#     predicted = model.predict(X)
+#     if predicted[0] == 0:
+#         return 'Dismissed'
+#     elif predicted[0] == 1:
+#         return 'Allowed'
+#     elif predicted[0] == 2:
+#         return 'Disposed Of'
+#     elif predicted[0] == 3:
+#         return 'Order Accordingly'
 
 
 def fun2find(sent):
@@ -106,8 +107,8 @@ def fun2find(sent):
         if 'order' in sent and 'accordingli' in sent:
             return 'Order Accordingly'
 
-    if flagall+flagdismiss+flagdispos > 1:
-        return word1+word2+kmeans(sent)
+    # if flagall+flagdismiss+flagdispos > 1:
+    #     return word1+word2+kmeans(sent)
 
     judgment = ''
     if flagall:
@@ -124,8 +125,9 @@ def fun2find(sent):
 
 
 def find_judgement(filename):
-    file = open(path+'/'+filename)
+    file = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/"+filename)
     sentences = file.readlines()
+    sentences = [x.decode("utf-8") for x in sentences]
     sentences = f(sentences)
     doc = []
     for sentence in sentences:

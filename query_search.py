@@ -131,14 +131,15 @@ def generateSummary_act(file):
     return sentences[0]
 
 
-def generate_case(finallist):
+def generate_case(finallist,query1):
     summary = []
     casename = []
     from gensim.summarization.summarizer import summarize
     from gensim.summarization import keywords
     for i in finallist:
-        file = open("All_FT/" + i[:-3] + ".txt")
+        file = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i[:-3] + ".txt")
         sentences = file.readlines()
+        sentences = [k.decode("utf-8") for k in sentences]
         line = 0
         while sentences[line] == "":
             line += 1
@@ -170,7 +171,7 @@ def generate_case(finallist):
         outdict = {}
         outdict['url'] = i[:-3]+".txt"
         outdict['casename'] = casename[j]
-        outdict['acts_sited'] = list(getActs("All_FT/" + i[:-3] + ".txt"))
+        outdict['acts_sited'] = list(getActs("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i[:-3] + ".txt"))
         try:
             outdict['keywords'] = data4[i[:-3]]
         except:
@@ -182,12 +183,16 @@ def generate_case(finallist):
 
         outdict['summary'] = summary[j]
         outdict['judgement'] = find_judgement(i[:-3]+".txt")
+        outdict['correct'] = query1
         outlist.append(outdict)
     return outlist
 
 
 def getResults(query, mode):
     finallist = test_tfidf(query, mode)
+    query1 = correct_query(query, mode)
+    if query1.strip() == query:
+        query1 = ""
     if mode == "acts":
         outlist = []
         for j, i in enumerate(finallist):
@@ -196,14 +201,16 @@ def getResults(query, mode):
                 outdict['url'] = data1[i]
                 outdict['casename'] = i
                 outdict['summary'] = generateSummary_act(data1[i])
+                outdict['correct'] = query1
             except:
                 outdict['url'] = ""
                 outdict['casename'] = i
                 outdict['summary'] = "No data exists"
+                outdict['correct'] = query1
 
             outlist.append(outdict)
         return outlist
     else:
-        return generate_case(finallist)
+        return generate_case(finallist,query1)
 
 # print(getResults("aadhar","acts"))

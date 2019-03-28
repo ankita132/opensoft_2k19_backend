@@ -7,12 +7,16 @@ from Judgement import *
 import os
 from query_search import *
 from flask import Blueprint, jsonify, abort, request
+from urllib.request import urlopen
 
 filtering = Blueprint('foo', __name__)
 
-cwd = os.getcwd()
-casedoc_dir = cwd+"/All_FT/"
-allfiles = os.listdir(casedoc_dir)
+filenametext = open("doc_path_ttl_id.txt")
+filenametext1 = filenametext.readlines()
+allfiles = []
+for i in filenametext1:
+    a = [m.start() for m in re.finditer('-->', i)]
+    allfiles.append(i[:a[0]] + ".txt")
 
 
 @filtering.route('/getData', methods=['POST'])
@@ -131,8 +135,9 @@ def get_data():
                 dateto = datetime.datetime.strptime(dicti['to'], '%d-%m-%Y')
 
             for j in newlist:
-                fi = open("./All_FT/" + j)
+                fi = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + j)
                 x = fi.readlines()
+                x = [i.decode("utf-8") for i in x]
                 flag = 0
                 for i in x:
                     i = i.strip()
@@ -149,8 +154,9 @@ def get_data():
         from gensim.summarization.summarizer import summarize
         from gensim.summarization import keywords
         for i in finallist:
-            file = open("All_FT/" + i)
+            file = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i)
             sentences = file.readlines()
+            sentences = [k.decode("utf-8") for k in sentences]
             line = 0
             while sentences[line] == "":
                 line += 1
@@ -185,7 +191,7 @@ def get_data():
             outdict['url'] = i
             outdict['casename'] = casename[j]
             outdict['summary'] = summary[j]
-            outdict['acts_sited'] = list(getActs("All_FT/" + i))
+            outdict['acts_sited'] = list(getActs("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + i))
 
             try:
                 outdict['keywords'] = data4[i[:-4]]

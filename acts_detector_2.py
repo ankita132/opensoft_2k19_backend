@@ -1,5 +1,6 @@
 import pygtrie
 import re
+from urllib.request import urlopen
 
 my_trie = pygtrie.StringTrie()
 
@@ -55,8 +56,8 @@ for i in year_disambiguated:
 
 def getActs(filestr):
     actlist_ = []
-    case_file = open(filestr)
-    case_file = case_file.read()
+    case_file = urlopen(filestr)
+    case_file = case_file.read().decode("utf-8")
 
     listi = [0]
     listi.extend([m.start() + 1 for m in re.finditer(' ', case_file)])
