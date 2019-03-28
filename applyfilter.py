@@ -59,6 +59,10 @@ def get_data():
     data5 = pickle.load(file)
     file.close()
 
+    file = open('case-date.pickle', 'rb')
+    data6 = pickle.load(file)
+    file.close()
+
     punctuations = '''!()[]{};:'"\,<>./?@#$%^&*_~'''
 
     def preprocess(case_file):
@@ -152,17 +156,10 @@ def get_data():
                 dateto = datetime.datetime.strptime(dicti['to'], '%d-%m-%Y')
 
             for j in newlist:
-                fi = urlopen("https://cloud-cube.s3.amazonaws.com/dkt220sxmwoo/public/All_FT/" + j)
-                x = fi.readlines()
-                x = [i.decode("utf-8") for i in x]
-                flag = 0
-                for i in x:
-                    i = i.strip()
-                    if is_date(i):
-                        date = datetime.datetime.strptime(i, '%d %B %Y')
-                        if date >= datefrom and date <= dateto:
-                            finallist.append(j)
-                        break
+                date = data6[j]
+                if date >= datefrom and date <= dateto:
+                    finallist.append(j)
+                break
 
         # print(finallist)
 
